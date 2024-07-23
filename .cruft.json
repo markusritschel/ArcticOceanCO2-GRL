@@ -1,0 +1,23 @@
+{
+  "template": "https://github.com/markusritschel/cookiecutter-pysci-project",
+  "commit": "c26dc5e576532e98c9aee5f72f1531a5b955d55a",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_author": "Markus Ritschel",
+      "email": "git@markusritschel.de",
+      "github_username": "markusritschel",
+      "project_name": "The Arctic Ocean's Carbon Cycle",
+      "project_slug": "arctic-ocean-pco2",
+      "project_description": "This project investigates continuous fields of surface ocean pCO2 in the Arctic Oceann. The data stem from the MPIM-SOM-FFN product (Landschützer, 2016), which uses a feed-forward neural network to fill gaps in the field of pCO2 observations.",
+      "project_version": "0.1.0",
+      "project_license": "MIT license",
+      "sphinx_theme": "furo",
+      "_copy_without_render": [
+        ".github/workflows/*"
+      ],
+      "_template": "https://github.com/markusritschel/cookiecutter-pysci-project"
+    }
+  },
+  "directory": null
+}

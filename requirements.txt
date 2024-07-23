@@ -1,6 +1,9 @@
+click
+cmcrameri
 colorama
+dask
 Deprecated
-python-dotenv
+geopandas
 ipython
 ipywidgets
 jupyter-book
@@ -17,5 +20,7 @@ pandas
 pytest
 pytest-cov
 python-dotenv
+regionmask
+seaborn
 tqdm
 xarray

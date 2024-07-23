@@ -5,9 +5,12 @@ channels:
   - defaults
 dependencies:
   - click
+  - cmcrameri
   - colorama
+  - dask
   - Deprecated
   - docopt
+  - geopandas
   - ipykernel
   - ipython
   - ipywidgets
@@ -20,10 +23,12 @@ dependencies:
   - matplotlib
   - mystmd
   - nodejs
-  - numpy
+  - numpy==1.26
   - pandas
   - pytest
   - python-dotenv
+  - regionmask
+  - seaborn
   - tqdm
   - xarray
   - pip

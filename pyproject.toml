@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools @ git+https://github.com/pypa/setuptools.git@main", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "src"
+description = "This project investigates continuous fields of surface ocean pCO2 in the Arctic Oceann. The data stem from the MPIM-SOM-FFN product (Landschützer, 2016), which uses a feed-forward neural network to fill gaps in the field of pCO2 observations."
+authors = [
+  {name = "Markus Ritschel", email = "git@markusritschel.de"},
+]
+readme = "README.md"
+license = {file = "LICENSE"}
+dynamic = ["version"]
+requires-python = ">= 3.10"
+dependencies = []
+
+
+[tool.setuptools.dynamic]
+version = {attr = "src.__version__"}
+
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src"]
+
+
+[tool.jupytext]
+formats = "ipynb,py:percent,md:myst"
+
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "src/tests",
+    "src",
+]
+addopts = [
+    "--doctest-modules",
+    "--doctest-continue-on-failure",
+    "-ra -v",
+    "--cov=./src",
+    "--cov-report=xml",
+    "--cov-report=html",
+    "--cov-report=term-missing"
+]
+
+
+[tool.cruft]
+skip = [".git/"]

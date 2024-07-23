@@ -1,0 +1,29 @@
+name: arctic-ocean-pco2
+channels:
+  - conda-forge
+  - anaconda
+  - defaults
+dependencies:
+  - click
+  - colorama
+  - Deprecated
+  - docopt
+  - ipykernel
+  - ipython
+  - ipywidgets
+  - jupyter-book
+  - jupyterbook-latex
+  - jupyterlab
+  - jupyternotify
+  - jupytext
+  - markdown
+  - matplotlib
+  - mystmd
+  - nodejs
+  - numpy
+  - pandas
+  - pytest
+  - python-dotenv
+  - tqdm
+  - xarray
+  - pip

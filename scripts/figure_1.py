@@ -15,9 +15,11 @@ import numpy as np
 import xarray as xr
 import pandas as pd
 import seaborn as sns
+import geopandas as gpd
+import textwrap
 from my_code_base.plot.maps import *
 
-from src import DATA_DIR, PLOT_DIR
+from src import *
 from src.core.utils import save, setup_logger
 from src.helper.coordinates import adjust_lons
 
@@ -72,7 +74,22 @@ def plot_map(ds, ax):
     ds.plot(ax=ax, vmax=15_000, transform=ccrs.PlateCarree(), 
             cmap=cmocean.cm.dense, 
             cbar_kwargs={'shrink': .6, 'label': '# observations'})
+    add_region_info(ax)
     ax.polar.add_features()
+
+
+def add_region_info(ax):
+    gdf = gpd.read_file(BASE_DIR/"assets/arctic-regions/arctic-regions.shp").iloc[4:]
+    gdf = gdf.set_crs('epsg:4326')  # Assuming the original CRS is WGS84 (EPSG:4326)
+    gdf = gdf.to_crs(epsg=3995)  # Example: transform to Arctic Polar Stereographic
+
+    gdf.apply(lambda x: ax.annotate(text='\n'.join(textwrap.wrap(x['name'], width=15)), 
+                                    xy=x.geometry.centroid.coords[0], 
+                                    ha='center', fontsize='x-small',
+                                    bbox=dict(boxstyle="round,pad=0.3", facecolor='white', edgecolor='none', alpha=0.85),
+                                    zorder=100),
+                axis=1)
+    gdf.plot(ax=ax, facecolor='none', edgecolor='orange', lw=1.5)
 
 
 def plot_cum_hist(df, ax):

@@ -153,6 +153,39 @@ def add_metadata(func):
     return wrapper
 
 
+class BunchDict(dict):
+    """BunchDict is a subclass of the built-in dict class that allows 
+    accessing dictionary keys as attributes.
+
+    This class overrides the `__getattr__` and `__setattr__` methods to 
+    provide attribute-style access to dictionary keys.
+    When an attribute is accessed, it is treated as a dictionary key 
+    and the corresponding value is returned.
+    When an attribute is set, it is treated as a dictionary key and 
+    the corresponding value is updated.
+
+    .. note::
+        This is now also implemented in :class:`sklearn.utils.Bunch`
+
+    Example
+    -------
+    >>> bd = BunchDict()
+    >>> bd['key'] = 'value'
+    >>> print(bd.key)
+    value
+    >>> bd.key = 'new value'
+    >>> print(bd['key'])
+    new value
+    """
+
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+
+
 @add_metadata
 @functools.singledispatch
 def save(obj, *args, **kwargs):

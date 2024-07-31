@@ -14,6 +14,7 @@ import xarray as xr
 import xarrayutils
 import xeofs
 from matplotlib import pyplot as plt
+import matplotlib as mpl
 import mpl_axes_aligner
 
 from src import BASE_DIR, DATA_DIR, PLOT_DIR
@@ -33,46 +34,38 @@ def main(modes=[1,2]):
     data = prepare_data(data)
     eofs, pcs, expvar = perform_eof_analysis(data, n_modes=10)
     fig = prepare_figure(modes)
+    fig_eof = fig.subfigs[0]
+    fig_pc = fig.subfigs[1]
 
     for i, mode in enumerate(modes):
-        fig_eof = fig.subfigs[0]
-        fig_pc = fig.subfigs[1]
-
         eof_ax = fig_eof.axes[i]
-        pc_ax = fig_pc.axes[n_modes*(i+1)]
-        pc_seas_ax = fig_pc.axes[n_modes*(i+1)+1]
+        pc_ax = fig_pc.axes[2*i]
+        pc_seas_ax = fig_pc.axes[2*i+1]
+        
         eof = eofs.sel(mode=mode)
         pc = pcs.sel(mode=mode)
+        
         plot_eof_map(eof=eof, ax=eof_ax)
         plot_pval_hatch(pc, data, ax=eof_ax)
         plot_principal_component(pc=pc, ax=pc_ax)
         plot_pc_seasonality(pc=pc, ax=pc_seas_ax)
         # plot_homogenous_map(ax=hom_map_ax)
+
+    adjust_ticks(fig)
+
     save(fig, PLOT_DIR/"figure_3.png", add_hash=True)
 
 
 def prepare_figure(modes):
-    fig = plt.figure(figsize=(12, 8), layout='constrained')
-    fig_eof, fig_pc = fig.subfigures(1, 2, width_ratios=[1, 2])
+    n_modes = len(modes)
+    fig = plt.figure(figsize=(12, 8))#, layout='constrained')
+    fig_eof, fig_pc = fig.subfigures(1, 2, width_ratios=[1, 2], hspace=0)
 
-    fig_eof.subplots(2, 1, subplot_kw=dict(projection=ccrs.NorthPolarStereo()))
-    fig_pc.subplots(4, 2, width_ratios=[5, 3], height_ratios=[1, 2, 2, 1], sharey=True)
-    fig_pc.axes[0].set_axis_off()
-    fig_pc.axes[1].set_axis_off()
-    fig_pc.axes[-2].set_axis_off()
-    fig_pc.axes[-1].set_axis_off()
-    return fig
-
-def prepare_figure2(modes):
-    fig = plt.figure(figsize=(12, 8), layout='constrained')
-    gs = fig.add_gridspec(len(modes), 3, width_ratios=[3,3,2])
-    
-    for i in range(len(modes)):
-        fig.add_subplot(gs[i, 0], projection=ccrs.NorthPolarStereo())
-        fig.add_subplot(gs[i, 1])
-        fig.add_subplot(gs[i, 2])
-        # fig.add_subplot(gs[i, 3], projection=ccrs.NorthPolarStereo())
-
+    fig_eof.subplots(n_modes, 1, subplot_kw=dict(projection=ccrs.NorthPolarStereo()))
+    fig_pc.subplots(n_modes, 2, width_ratios=[5, 2], height_ratios=[1,]*n_modes, sharey=True)
+    fig_pc.subplots_adjust(hspace=.2, wspace=0.05, top=.75, bottom=.25, left=0)
+    # fig_eof.set_facecolor('#f7d4d4')
+    # fig_pc.set_facecolor('#d4eef7')
     return fig
 
 
@@ -160,10 +153,29 @@ def plot_pval_hatch(pc, data, ax):
 
 def plot_principal_component(pc, ax):
     pc.plot(ax=ax, c='k')
+    ax.axhline(0, c='.5', lw=1, zorder=0)
     ax.set_title('')
     ax.set_xlabel('')
     ax.set_ylabel('')
     # ax.set_title('')
+
+def adjust_ticks(fig):
+    fig_eof = fig.subfigs[0]
+    n_modes = len(fig_eof.axes)
+    fig_pc = fig.subfigs[1]
+
+    for ax in fig_pc.axes:
+        ax.tick_params(top=True, bottom=True, direction='in')
+        dx = 0/72.
+        dy = -5/72.
+        offset = mpl.transforms.ScaledTranslation(dx, dy, fig_pc.dpi_scale_trans)
+        for label in ax.xaxis.get_majorticklabels():
+            label.set_transform(label.get_transform() + offset)
+    
+    axes_without_twinx = fig_pc.axes[:-n_modes]
+    last_axes_row = axes_without_twinx[-(len(axes_without_twinx)//n_modes):]
+    for ax in last_axes_row:
+        ax.set_xticklabels([])
 
 
 def plot_pc_seasonality(pc, ax):
@@ -174,6 +186,9 @@ def plot_pc_seasonality(pc, ax):
 
     add_sia_to_pc_seasonality(ax_sia)
     mpl_axes_aligner.align.yaxes(ax, 0, ax_sia, 6.5)
+
+    ax.axhline(0, c='.5', lw=1, zorder=0)
+    ax.tick_params(top=True, bottom=True, direction='in')
 
     ax.set_title('')
     ax.set_xlabel('')
@@ -227,3 +242,5 @@ def plot_homogenous_map(ax):
 
 if __name__ == "__main__":
     main()
+
+# %%

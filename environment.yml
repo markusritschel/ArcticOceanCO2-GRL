@@ -28,7 +28,10 @@ dependencies:
   - pytest
   - python-dotenv
   - regionmask
+  - scipy
   - seaborn
   - tqdm
   - xarray
+  - xarrayutils
+  - xeofs
   - pip

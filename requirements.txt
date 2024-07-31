@@ -21,6 +21,9 @@ pytest
 pytest-cov
 python-dotenv
 regionmask
+scipy
 seaborn
 tqdm
 xarray
+xarrayutils
+xeofs

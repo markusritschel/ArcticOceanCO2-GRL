@@ -106,50 +106,46 @@ def add_metadata(func):
     -------
     callable
         The decorated function.
-
     """
+    import os
+    import subprocess
+    import sys
+    from pathlib import Path
+
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
-        metadata = {}
+        kwargs.setdefault('add_hash', False)
 
-        frame = sys._getframe(1)#.f_back
-        filename = frame.f_code.co_filename
-        line_number = frame.f_lineno #- 1   # TODO: <-- check!
-        relative_path = os.path.relpath(filename)
-        git_commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+        meta = collect_metadata()
+        kwargs['metadata'] = meta
 
-        metadata['relative_path'] = relative_path
-        metadata['line_number'] = line_number
-        metadata['git_commit'] = git_commit
-        
-        obj = args[0] if args else None
-        print(f"Object to be saved': {obj}")
-        # print("Code context:", frame.f_code.co_name)
-        print("Code filename:", filename)
-        print("Git commit:", git_commit)
-        print("Log metadata_dict: ", metadata)
-        
         args = list(args)
+        obj = args[0]
         path = Path(args[1])
         suffix = ''
-        if kwargs.pop('add_hash', True):
-            suffix += f"_{git_commit}"
-        args[1] = f'{path.parent}/{path.stem}{suffix}{path.suffix}'
+        if kwargs.pop('add_hash'):
+            suffix += f"_{meta.git_commit}"
+        output_path = f'{path.parent}/{path.stem}{suffix}{path.suffix}'
+        args[1] = output_path
         
-        obj_type = str(type(obj)).split("'")[1].split('.')[-1]
-        
-        msg = f"Save {obj_type} to {args[1]}"
-        if kwargs:
-            kws = [f"{k}={v}" for (k,v) in kwargs.items()]
-            msg += f" with {', '.join(kws)}"
-        print(msg)
-        log.info(f"Log: {msg} to {args[1]}, produced by {relative_path}#{line_number} @{git_commit}")
-
-        if isinstance(obj, plt.Figure):
-            metadata = {k:str(v) for k,v in metadata.items()}
-            kwargs['metadata'] = metadata
+        obj_type = get_obj_type_str(obj)
+        log.info(f"Saved {obj_type} to {output_path}, produced by {meta.relative_code_path}#{meta.line_number} @git-commit:{meta.git_commit}")
 
         return func(*args, **kwargs)
+
+    def collect_metadata():
+        frame = sys._getframe(1).f_back
+        code_filename = frame.f_code.co_filename
+        line_number = frame.f_lineno #- 1   # TODO: <-- check!
+        relative_code_path = os.path.relpath(code_filename)
+        git_commit = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']).decode('ascii').strip()
+
+        metadata = {}
+        metadata['relative_code_path'] = relative_code_path
+        metadata['line_number'] = str(line_number)
+        metadata['git_commit'] = git_commit
+        return BunchDict(metadata)
+        
     return wrapper
 
 
@@ -184,6 +180,15 @@ class BunchDict(dict):
     def __setattr__(self, attr, value):
         self[attr] = value
 
+
+def get_obj_type_str(obj):
+    """Transform the output of `type` to a simplified descriptor:
+    
+    Turns
+        "<class 'xarray.core.dataset.Dataset'>"
+    into "Dataset"
+    """
+    return str(type(obj)).split("'")[1].split('.')[-1]
 
 
 @add_metadata

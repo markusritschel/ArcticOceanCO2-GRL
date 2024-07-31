@@ -37,6 +37,7 @@ def main(modes=[1,2]):
     fig_eof = fig.subfigs[0]
     fig_pc = fig.subfigs[1]
 
+    images = []
     for i, mode in enumerate(modes):
         eof_ax = fig_eof.axes[i]
         pc_ax = fig_pc.axes[2*i]
@@ -45,13 +46,15 @@ def main(modes=[1,2]):
         eof = eofs.sel(mode=mode)
         pc = pcs.sel(mode=mode)
         
-        plot_eof_map(eof=eof, ax=eof_ax)
+        im = plot_eof_map(eof=eof, ax=eof_ax)
+        images.append(im)
         plot_pval_hatch(pc, data, ax=eof_ax)
         plot_principal_component(pc=pc, ax=pc_ax)
         plot_pc_seasonality(pc=pc, ax=pc_seas_ax)
         # plot_homogenous_map(ax=hom_map_ax)
 
     adjust_ticks(fig)
+    add_colorbar(images, fig_eof)
 
     save(fig, PLOT_DIR/"figure_3.png", add_hash=True)
 
@@ -133,11 +136,12 @@ def plot_expvar(expvar):
 
 
 def plot_eof_map(eof, ax):
-    eof.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=cmocean.cm.balance, add_colorbar=False)
+    im = eof.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=cmocean.cm.balance, add_colorbar=False)
     ax.set_title('')
     ax.polar.add_features(labels=False, 
                           ruler_kwargs={'primary_color': '#808080', 
                                         'secondary_color': '#EFEFDA'})
+    return im
 
 
 def plot_pval_hatch(pc, data, ax):
@@ -176,6 +180,15 @@ def adjust_ticks(fig):
     last_axes_row = axes_without_twinx[-(len(axes_without_twinx)//n_modes):]
     for ax in last_axes_row:
         ax.set_xticklabels([])
+
+
+def add_colorbar(images, fig):
+    for im in images:
+        # TODO: Normalize images to the same color scale
+        continue
+    cax = fig.add_axes([0.2, 0.05, 0.6, 0.02])
+    cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
+    # cbar.set_label('Colorbar Label')
 
 
 def plot_pc_seasonality(pc, ax):

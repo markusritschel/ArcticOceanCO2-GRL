@@ -29,10 +29,10 @@ plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
 
 
 def main(modes=[1,2]):
-    n_modes = len(modes)
     data = read_data()
     data = prepare_data(data)
-    eofs, pcs, expvar = perform_eof_analysis(data, n_modes=10)
+    eof_model = perform_eof_analysis(data, n_modes=10)
+
     fig = prepare_figure(modes)
     fig_eof = fig.subfigs[0]
     fig_pc = fig.subfigs[1]
@@ -43,30 +43,37 @@ def main(modes=[1,2]):
         pc_ax = fig_pc.axes[2*i]
         pc_seas_ax = fig_pc.axes[2*i+1]
         
-        eof = eofs.sel(mode=mode)
-        pc = pcs.sel(mode=mode)
-        
-        im = plot_eof_map(eof=eof, ax=eof_ax)
+        eof = eof_model.components().sel(mode=mode)
+        pc = eof_model.scores().sel(mode=mode)
+
+        im = plot_eof_map(eof, ax=eof_ax)
         images.append(im)
-        plot_pval_hatch(pc, data, ax=eof_ax)
+        add_homogenous_map_contours(pc, data, ax=eof_ax)
+        add_pval_hatch(pc, data, ax=eof_ax)
+        title_dict = {1: 'high-Arctic mode EOF', 2: 'sub-Arctic mode EOF'}
+        eof_ax.set_title(title_dict[int(eof.mode.values)])
+    
         plot_principal_component(pc=pc, ax=pc_ax)
         plot_pc_seasonality(pc=pc, ax=pc_seas_ax)
-        # plot_homogenous_map(ax=hom_map_ax)
+        if i==0:
+            pc_ax.set_title("Principal component", loc='left')
+            pc_seas_ax.set_title("PC Seasonality", loc='left')
+        # plot_homogenous_map(pc, ax=eof_ax)
 
     adjust_ticks(fig)
     add_colorbar(images, fig_eof)
 
-    save(fig, PLOT_DIR/"figure_3.png", add_hash=True)
+    save(fig, PLOT_DIR/"figure_3.png", add_hash=True, bbox_inches='tight')
 
 
 def prepare_figure(modes):
     n_modes = len(modes)
-    fig = plt.figure(figsize=(12, 8))#, layout='constrained')
-    fig_eof, fig_pc = fig.subfigures(1, 2, width_ratios=[1, 2], hspace=0)
+    fig = plt.figure(figsize=(10, 11))#, layout='constrained')
+    fig_eof, fig_pc = fig.subfigures(2, 1, height_ratios=[5, 6], hspace=0.0)
 
-    fig_eof.subplots(n_modes, 1, subplot_kw=dict(projection=ccrs.NorthPolarStereo()))
+    fig_eof.subplots(1, n_modes, subplot_kw=dict(projection=ccrs.NorthPolarStereo()))
     fig_pc.subplots(n_modes, 2, width_ratios=[5, 2], height_ratios=[1,]*n_modes, sharey=True)
-    fig_pc.subplots_adjust(hspace=.2, wspace=0.05, top=.75, bottom=.25, left=0)
+    fig_pc.subplots_adjust(hspace=.2, wspace=0.05)
     # fig_eof.set_facecolor('#f7d4d4')
     # fig_pc.set_facecolor('#d4eef7')
     return fig
@@ -121,12 +128,8 @@ def perform_eof_analysis(data, n_modes=10):
         log.warning(f"Less than 70% of the variance explained by the first {len(expvar)} EOFs.")
 
     plot_expvar(expvar)
+    return rotator
     
-    eofs = rotator.components()
-    pcs = rotator.scores()
-
-    return eofs, pcs, expvar
-
 
 def plot_expvar(expvar):
     fig = plt.figure()
@@ -137,14 +140,15 @@ def plot_expvar(expvar):
 
 def plot_eof_map(eof, ax):
     im = eof.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=cmocean.cm.balance, add_colorbar=False)
-    ax.set_title('')
     ax.polar.add_features(labels=False, 
                           ruler_kwargs={'primary_color': '#808080', 
                                         'secondary_color': '#EFEFDA'})
     return im
 
 
-def plot_pval_hatch(pc, data, ax):
+def add_pval_hatch(pc, data, ax):
+    plt.rc('hatch', color='.3', linewidth=.5)
+
     pval = xarrayutils.xr_linregress(pc, data, dim='time').p_value
     pval.where(pval < .05).plot.contourf(ax=ax, transform=ccrs.PlateCarree(),
                                             add_colorbar=False,
@@ -152,16 +156,31 @@ def plot_pval_hatch(pc, data, ax):
                                             # )
                                             cmap='none',  # alpha=.7,
                                             hatches=['...'])
-    ax.set_title('')
+
+
+def add_homogenous_map_contours(pc, data, ax, levels=[50]):
+    lin_reg = xarrayutils.xr_linregress(pc, data, dim='time')
+    variance = lin_reg.r_value**2 * 100
+    pval = lin_reg.p_value
+    CS = variance.plot.contour(
+        levels=levels,
+        ax=ax,
+        colors='cyan',
+        linewidths=3,
+        transform=ccrs.PlateCarree(),
+        vmin=0,
+        vmax=100,  # robust=True,
+    )
 
 
 def plot_principal_component(pc, ax):
     pc.plot(ax=ax, c='k')
     ax.axhline(0, c='.5', lw=1, zorder=0)
-    ax.set_title('')
+    title_dict = {1: 'high-Arctic mode', 2: 'sub-Arctic mode'}
     ax.set_xlabel('')
-    ax.set_ylabel('')
-    # ax.set_title('')
+    ax.set_ylabel(title_dict[int(pc.mode.values)])
+    ax.set_title('')
+
 
 def adjust_ticks(fig):
     fig_eof = fig.subfigs[0]
@@ -183,12 +202,19 @@ def adjust_ticks(fig):
 
 
 def add_colorbar(images, fig):
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    import matplotlib.axes as maxes
+
     for im in images:
-        # TODO: Normalize images to the same color scale
-        continue
-    cax = fig.add_axes([0.2, 0.05, 0.6, 0.02])
-    cbar = fig.colorbar(im, cax=cax, orientation='horizontal')
-    # cbar.set_label('Colorbar Label')
+        # TODO: Normalize images to the same color range
+        ...
+    # divider = make_axes_locatable(fig.axes[-1])
+    # cax = divider.append_axes('right', size='5%', pad=0.1, axes_class=maxes.Axes)
+    
+    cax = fig.add_axes([0.95, 0.3, 0.02, 0.4])
+
+    cbar = fig.colorbar(im, cax=cax, orientation='vertical', shrink=0.6)
+    # plt.subplots_adjust(wspace=0.05)
 
 
 def plot_pc_seasonality(pc, ax):
@@ -255,5 +281,3 @@ def plot_homogenous_map(ax):
 
 if __name__ == "__main__":
     main()
-
-# %%

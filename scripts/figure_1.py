@@ -6,23 +6,22 @@
 #
 """This script creates Figure 1 of the paper"""
 import logging
+import textwrap
 
 import cartopy.crs as ccrs
 import cmcrameri
 import cmocean
-from matplotlib import pyplot as plt
+import geopandas as gpd
 import numpy as np
-import xarray as xr
 import pandas as pd
 import seaborn as sns
-import geopandas as gpd
-import textwrap
+import xarray as xr
+from matplotlib import pyplot as plt
 from my_code_base.plot.maps import *
 
 from src import *
 from src.core.utils import save, setup_logger
 from src.helper.coordinates import adjust_lons
-
 
 log = logging.getLogger(__name__)
 
@@ -122,7 +121,7 @@ def plot_heatmap(df, ax):
                        bbox_transform=ax.transAxes,
                        borderpad=0,
                        )
-    plt.colorbar(im, cax=axins, label='', extend='max', orientation='horizontal')
+    plt.colorbar(im, cax=axins, label='', extend='max', extendfrac=.2, orientation='horizontal')
     ax.invert_yaxis()
     sns.despine(offset={'left':10}, trim=True, ax=ax)
     ax.set_xlabel('')

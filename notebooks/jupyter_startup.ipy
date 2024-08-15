@@ -43,28 +43,31 @@ log.handlers = [handler]
 
 # ---------------------------------------------
 # Create some custom magic commands
-from markdown import markdown
-from IPython.core.display import HTML
+try:
+    from markdown import markdown
+    from IPython.core.display import HTML
 
-@magics_class
-class MarkdownMagics(Magics):
+    @magics_class
+    class MarkdownMagics(Magics):
 
-    @cell_magic
-    def important(self, line, cell):
-        """Provides a new cell magic that depicts a red-framed panel."""
-        if not line:
-            line = 'Important'
-        return HTML(
-            "<div style='border:thick solid red; padding:10px'>"
-            "<div style='color:red; font-size:x-large; text-decoration:underline'>{}</div>"
-            "<div style='font-weight:bold; font-size:large'>{}</div>"
-            "</div>".format(
-                markdown(line, extensions=['markdown.extensions.extra']),
-                markdown(cell, extensions=['markdown.extensions.extra'])
+        @cell_magic
+        def important(self, line, cell):
+            """Provides a new cell magic that depicts a red-framed panel."""
+            if not line:
+                line = 'Important'
+            return HTML(
+                "<div style='border:thick solid red; padding:10px'>"
+                "<div style='color:red; font-size:x-large; text-decoration:underline'>{}</div>"
+                "<div style='font-weight:bold; font-size:large'>{}</div>"
+                "</div>".format(
+                    markdown(line, extensions=['markdown.extensions.extra']),
+                    markdown(cell, extensions=['markdown.extensions.extra'])
+                )
             )
-        )
 
-get_ipython().register_magics(MarkdownMagics)
+    get_ipython().register_magics(MarkdownMagics)
+except ModuleNotFoundError:
+    log.warning("Couldn't import markdown and HTML.")
 
 # ---------------------------------------------
 # Set pandas and xarray default options

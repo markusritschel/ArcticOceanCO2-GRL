@@ -119,13 +119,13 @@ def prepare_data(data: xr.DataArray):
     # Restrict the domain to the Arctic
     data = data.sel(lat=slice(50, 90))
 
-    # Fill NaNs with the mean of the detrended time series (--> 0) to remove variance
-    data = data.fillna(data.mean('time'))
-
     return data
 
 
 def perform_eof_analysis(data, n_modes=10):
+    # Fill NaNs with the mean of the detrended time series (--> 0) to remove variance
+    data = data.fillna(data.mean('time'))
+
     model = xeofs.models.EOF(n_modes=n_modes, standardize=False, center=True, use_coslat=True)
     model.fit(data, dim=['time'])
 

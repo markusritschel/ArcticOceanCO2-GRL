@@ -35,11 +35,14 @@ def main(modes=[1,2]):
 
     fig = prepare_figure(modes)
     fig_eof = fig.subfigs[0]
-    fig_pc = fig.subfigs[1]
+    fig_hmv = fig.subfigs[1]
+    fig_pc = fig.subfigs[2]
 
-    images = []
+    eof_images = []
+    hmv_images = []
     for i, mode in enumerate(modes):
         eof_ax = fig_eof.axes[i]
+        hmv_ax = fig_hmv.axes[i]
         pc_ax = fig_pc.axes[2*i]
         pc_seas_ax = fig_pc.axes[2*i+1]
         
@@ -47,12 +50,14 @@ def main(modes=[1,2]):
         pc = eof_model.scores().sel(mode=mode)
 
         im = plot_eof_map(eof, ax=eof_ax)
-        images.append(im)
-        add_homogenous_map_contours(pc, data, ax=eof_ax)
+        eof_images.append(im)
         add_pval_hatch(pc, data, ax=eof_ax)
         title_dict = {1: 'high-Arctic mode EOF', 2: 'sub-Arctic mode EOF'}
         eof_ax.set_title(title_dict[int(eof.mode.values)])
     
+        im = plot_homogenous_map(pc, data, ax=hmv_ax)
+        hmv_images.append(im)
+        
         plot_principal_component(pc=pc, ax=pc_ax)
         plot_pc_seasonality(pc=pc, ax=pc_seas_ax)
         if i==0:
@@ -61,17 +66,19 @@ def main(modes=[1,2]):
         # plot_homogenous_map(pc, ax=eof_ax)
 
     adjust_ticks(fig)
-    add_colorbar(images, fig_eof)
+    add_colorbar(eof_images, fig_eof)
+    add_colorbar(hmv_images, fig_hmv)
 
     save(fig, PLOT_DIR/"figure_3.png", add_hash=True, bbox_inches='tight')
 
 
 def prepare_figure(modes):
     n_modes = len(modes)
-    fig = plt.figure(figsize=(10, 11))#, layout='constrained')
-    fig_eof, fig_pc = fig.subfigures(2, 1, height_ratios=[5, 6], hspace=0.0)
+    fig = plt.figure(figsize=(10, 13))#, layout='constrained')
+    fig_eof, fig_pv, fig_pc = fig.subfigures(3, 1, height_ratios=[5, 5, 7], hspace=0.0)
 
     fig_eof.subplots(1, n_modes, subplot_kw=dict(projection=ccrs.NorthPolarStereo()))
+    fig_pv.subplots(1, n_modes, subplot_kw=dict(projection=ccrs.NorthPolarStereo()))
     fig_pc.subplots(n_modes, 2, width_ratios=[5, 2], height_ratios=[1,]*n_modes, sharey=True)
     fig_pc.subplots_adjust(hspace=.2, wspace=0.05)
     # fig_eof.set_facecolor('#f7d4d4')
@@ -274,8 +281,17 @@ def calc_seasonality(df):
     return seasonal.droplevel(0, axis=1)#.mean(axis=1)
 
 
-def plot_homogenous_map(ax):
-    ...
+def plot_homogenous_map(pc, data, ax):
+    from xarrayutils import xr_linregress
+    res = xr_linregress(data, pc, dim='time')
+    pval = res.r_value ** 2 * 100
+    im = pval.plot(
+        ax=ax,
+        transform=ccrs.PlateCarree(),
+        add_colorbar=False,
+    )
+    ax.set_title(f"Homogeneous\nmap of variance")#\n(dof via {dof.replace('_',' ')})")
+    return im
 
 
 

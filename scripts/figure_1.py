@@ -17,6 +17,7 @@ import pandas as pd
 import seaborn as sns
 import xarray as xr
 from matplotlib import pyplot as plt
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from my_code_base.plot.maps import *
 
 from src import *
@@ -24,6 +25,8 @@ from src.core.utils import save, setup_logger
 from src.helper.coordinates import adjust_lons
 
 log = logging.getLogger(__name__)
+
+plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
 
 
 def main():
@@ -38,7 +41,7 @@ def main():
     plot_map(ds_50N, ax=ax1)
     plot_cum_hist(df_66N_avg, ax=ax2)
     plot_heatmap(df_66N_avg, ax=ax3)
-    save(fig, PLOT_DIR/f"figure_1.png", dpi=300)
+    save(fig, PLOT_DIR/"figure_1.png", dpi=300)
 
 
 def read_socat_obs_data(filepath):
@@ -51,6 +54,9 @@ def read_socat_obs_data(filepath):
 
 
 def transform_to_df(ds):
+    """Transform the xarray dataset to a pandas DataFrame.
+    The dataset is first summed over the lon and lat dimensions and scaled by a factor of 1000.
+    """
     ds = ds.sum(['lon', 'lat']) / 1000
     df = ds.to_dataframe()
     df['year'] = df.index.year
@@ -62,9 +68,9 @@ def transform_to_df(ds):
 def prepare_plot():
     fig = plt.figure(figsize=(8, 11))
     gs = fig.add_gridspec(2, 2, height_ratios=[2.5, 1])
-    _ = fig.add_subplot(gs[0, :], projection=ccrs.NorthPolarStereo())
-    a = fig.add_subplot(gs[1, 0])
-    _ = fig.add_subplot(gs[1, 1], sharex=a)
+    map_ax = fig.add_subplot(gs[0, :], projection=ccrs.NorthPolarStereo())
+    hist_1d_ax = fig.add_subplot(gs[1, 0])
+    hist_2d_ax = fig.add_subplot(gs[1, 1], sharex=hist_1d_ax)
     return fig
 
 
@@ -95,7 +101,7 @@ def plot_cum_hist(df, ax):
     df = df.sum(axis=1)
     ax.step(df.index, df, where='mid', color='k')
     ax.fill_between(df.index, df, step="mid", alpha=0.1, fc='k')
-    ax.text(0, .85, "Number of CO2 observations\n[in ×10³]", transform=ax.transAxes, va='top')
+    ax.set_title("Number of CO2 observations north of 66°N [in ×10³]", loc='left', y=1.1)
     ax.set_xlim(1980, 2021)
     ax.set_xlabel('')
     ax.set_ylabel('Count')
@@ -103,7 +109,6 @@ def plot_cum_hist(df, ax):
 
 
 def plot_heatmap(df, ax):
-    from mpl_toolkits.axes_grid1.inset_locator import inset_axes
     vmin = 0
     if (quantile:=np.nanquantile(df.values, 0.98))==0:
         vmax_ = np.nanmax(df.values)

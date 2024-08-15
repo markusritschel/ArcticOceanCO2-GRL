@@ -61,7 +61,7 @@ def main(modes=[1,2]):
         plot_principal_component(pc=pc, ax=pc_ax)
         plot_pc_seasonality(pc=pc, ax=pc_seas_ax)
         if i==0:
-            pc_ax.set_title("Principal component", loc='left')
+            pc_ax.set_title("Principal Component (PC)", loc='left')
             pc_seas_ax.set_title("PC Seasonality", loc='left')
         # plot_homogenous_map(pc, ax=eof_ax)
 
@@ -116,7 +116,7 @@ def prepare_data(data: xr.DataArray):
     masks = mask_xarray(data, BASE_DIR/"assets/arctic-regions/arctic-regions.shp")
     data = data.where(~masks.sel(domain='Baltic Sea'))
 
-    # Restrict the domain to the Arctic
+    # Restrict the domain to the domain north of 50°N
     data = data.sel(lat=slice(50, 90))
 
     return data
@@ -189,7 +189,7 @@ def plot_principal_component(pc, ax):
     ax.axhline(0, c='.5', lw=1, zorder=0)
     title_dict = {1: 'high-Arctic mode', 2: 'sub-Arctic mode'}
     ax.set_xlabel('')
-    ax.set_ylabel(title_dict[int(pc.mode.values)])
+    ax.set_ylabel(title_dict[int(pc.mode.values)], fontsize='large')
     ax.set_title('')
 
 
@@ -212,7 +212,7 @@ def adjust_ticks(fig):
         ax.set_xticklabels([])
 
 
-def add_colorbar(images, fig):
+def add_colorbar(images, fig, **kwargs):
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     import matplotlib.axes as maxes
 
@@ -222,9 +222,9 @@ def add_colorbar(images, fig):
     # divider = make_axes_locatable(fig.axes[-1])
     # cax = divider.append_axes('right', size='5%', pad=0.1, axes_class=maxes.Axes)
     
-    cax = fig.add_axes([0.95, 0.3, 0.02, 0.4])
+    cax = fig.add_axes([0.95, 0.2, 0.015, 0.6])
 
-    cbar = fig.colorbar(im, cax=cax, orientation='vertical', shrink=0.6)
+    cbar = fig.colorbar(im, cax=cax, orientation='vertical', shrink=0.8, **kwargs)
     # plt.subplots_adjust(wspace=0.05)
 
 

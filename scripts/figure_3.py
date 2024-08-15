@@ -83,6 +83,12 @@ def prepare_figure(modes):
     fig_pc.subplots_adjust(hspace=.2, wspace=0.05)
     # fig_eof.set_facecolor('#f7d4d4')
     # fig_pc.set_facecolor('#d4eef7')
+
+    for ax in fig_eof.axes + fig_pv.axes:
+        ax.polar.add_features(labels=False, 
+                            ocean_kwargs={'facecolor': '#EFEFDA'},
+                            ruler_kwargs={'primary_color': '#808080', 
+                                            'secondary_color': '#EFEFDA'})
     return fig
 
 
@@ -147,9 +153,6 @@ def plot_expvar(expvar):
 
 def plot_eof_map(eof, ax):
     im = eof.plot(ax=ax, transform=ccrs.PlateCarree(), cmap=cmocean.cm.balance, add_colorbar=False)
-    ax.polar.add_features(labels=False, 
-                          ruler_kwargs={'primary_color': '#808080', 
-                                        'secondary_color': '#EFEFDA'})
     return im
 
 

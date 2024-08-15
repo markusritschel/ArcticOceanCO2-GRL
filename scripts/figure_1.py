@@ -80,7 +80,7 @@ def plot_map(ds, ax):
             cmap=cmocean.cm.dense, 
             cbar_kwargs={'shrink': .6, 'label': '# observations'})
     add_region_info(ax)
-    ax.polar.add_features()
+    ax.polar.add_features(ruler_kwargs={'width': .3, 'primary_color': '#333'})
 
 
 def add_region_info(ax):

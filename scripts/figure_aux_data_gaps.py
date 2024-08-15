@@ -24,7 +24,7 @@ def main():
     data = read_data()
     data = prepare_data(data)
     plot_maps(data)
-    save(plt.gcf(), PLOT_DIR/"aux_data_gaps.png", add_hash=True)  # noqa: F405
+    save(plt.gcf(), PLOT_DIR/"aux_data_gaps.png", add_hash=True, transparent=True)
 
 
 def read_data():

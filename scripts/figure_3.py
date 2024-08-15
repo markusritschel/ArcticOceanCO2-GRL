@@ -70,7 +70,7 @@ def main(modes=[1,2]):
     add_colorbar(eof_images, fig_eof)
     add_colorbar(hmv_images, fig_hmv)
 
-    save(fig, PLOT_DIR/"figure_3.png", add_hash=True, bbox_inches='tight')
+    save(fig, PLOT_DIR/"figure_3.png", add_hash=True, bbox_inches='tight', transparent=True)
 
 
 def prepare_figure(modes):
@@ -150,7 +150,7 @@ def plot_expvar(expvar):
     fig = plt.figure()
     expvar.plot(marker='.', lw=.5, ax=plt.gca())
     plt.title('')
-    save(fig, PLOT_DIR/"eof_analysis_explained_variance.png")
+    save(fig, PLOT_DIR/"eof_analysis_explained_variance.png", transparent=True)
 
 
 def plot_eof_map(eof, ax):

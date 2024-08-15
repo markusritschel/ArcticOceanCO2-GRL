@@ -41,7 +41,7 @@ def main():
     plot_map(ds_50N, ax=ax1)
     plot_cum_hist(df_66N_avg, ax=ax2)
     plot_heatmap(df_66N_avg, ax=ax3)
-    save(fig, PLOT_DIR/"figure_1.png", dpi=300)
+    save(fig, PLOT_DIR/"figure_1.png", dpi=300, transparent=True)
 
 
 def read_socat_obs_data(filepath):

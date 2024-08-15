@@ -97,7 +97,7 @@ def main():
             for im in images:
                 im.set_norm(norm)
 
-        save(fig, PLOT_DIR/f"figure_4_{name}.png", add_hash=True, bbox_inches='tight')
+        save(fig, PLOT_DIR/f"figure_4_{name}.png", add_hash=True, bbox_inches='tight', transparent=True)
 
 
 def load_data():

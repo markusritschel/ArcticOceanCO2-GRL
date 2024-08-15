@@ -31,7 +31,7 @@ plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
 def main(modes=[1,2]):
     data = read_data()
     data = prepare_data(data)
-    eof_model = perform_eof_analysis(data, n_modes=10)
+    eof_model = perform_eof_analysis(data, n_modes=10, plot_expvar=False)
 
     fig = prepare_figure(modes)
     fig_eof = fig.subfigs[0]
@@ -122,7 +122,7 @@ def prepare_data(data: xr.DataArray):
     return data
 
 
-def perform_eof_analysis(data, n_modes=10):
+def perform_eof_analysis(data, n_modes=10, plot_expvar=False):
     # Fill NaNs with the mean of the detrended time series (--> 0) to remove variance
     data = data.fillna(data.mean('time'))
 
@@ -140,7 +140,8 @@ def perform_eof_analysis(data, n_modes=10):
     except:
         log.warning(f"Less than 70% of the variance explained by the first {len(expvar)} EOFs.")
 
-    plot_expvar(expvar)
+    if plot_expvar:
+        plot_expvar(expvar)
     return rotator
     
 

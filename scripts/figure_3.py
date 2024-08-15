@@ -16,6 +16,7 @@ import xeofs
 from matplotlib import pyplot as plt
 import matplotlib as mpl
 import mpl_axes_aligner
+from my_code_base.stats.xarray_utils import xr_linregress
 
 from src import BASE_DIR, DATA_DIR, PLOT_DIR
 from src.core.utils import save
@@ -159,14 +160,12 @@ def plot_eof_map(eof, ax):
 
 def add_pval_hatch(pc, data, ax):
     plt.rc('hatch', color='.3', linewidth=.5)
-
-    pval = xarrayutils.xr_linregress(pc, data, dim='time').p_value
-    pval.where(pval < .05).plot.contourf(ax=ax, transform=ccrs.PlateCarree(),
-                                            add_colorbar=False,
-                                            # levels=[.05,1], lw=2, colors='w'
-                                            # )
-                                            cmap='none',  # alpha=.7,
-                                            hatches=['...'])
+    res = xr_linregress(data, pc, dim='time', dof='integral_timescale')
+    pval = res.p_value
+    pval.where(pval < .01).plot.contourf(ax=ax, transform=ccrs.PlateCarree(),
+                                         add_colorbar=False,
+                                         cmap='none',  # alpha=.7,
+                                         hatches=['...'])
 
 
 def add_homogenous_map_contours(pc, data, ax, levels=[50]):
@@ -286,8 +285,7 @@ def calc_seasonality(df):
 
 
 def plot_homogenous_map(pc, data, ax):
-    from xarrayutils import xr_linregress
-    res = xr_linregress(data, pc, dim='time')
+    res = xr_linregress(data, pc, dim='time', dof='integral_timescale')
     pval = res.r_value ** 2 * 100
     im = pval.plot(
         ax=ax,

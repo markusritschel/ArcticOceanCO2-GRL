@@ -30,6 +30,7 @@ dependencies:
   - regionmask
   - scipy
   - seaborn
+  - ruff
   - tqdm
   - xarray
   - xarrayutils

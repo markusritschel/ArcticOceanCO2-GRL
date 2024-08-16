@@ -23,6 +23,7 @@ python-dotenv
 regionmask
 scipy
 seaborn
+ruff
 tqdm
 xarray
 xarrayutils

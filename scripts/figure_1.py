@@ -101,7 +101,7 @@ def plot_cum_hist(df, ax):
     df = df.sum(axis=1)
     ax.step(df.index, df, where='mid', color='k')
     ax.fill_between(df.index, df, step="mid", alpha=0.1, fc='k')
-    ax.set_title("Number of CO2 observations north of 66°N [in ×10³]", loc='left', y=1.1)
+    ax.set_title("Number of pCO2 observations north of 66°N [in ×10³]", loc='left', y=1.1)
     ax.set_xlim(1980, 2021)
     ax.set_xlabel('')
     ax.set_ylabel('Count')

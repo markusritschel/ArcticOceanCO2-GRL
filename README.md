@@ -1,12 +1,15 @@
 # The Arctic Ocean's Carbon Cycle <!-- omit in toc -->
 
-[![build](https://github.com/markusritschel/arctic-ocean-pco2/actions/workflows/main.yml/badge.svg)]([![build](https://github.com/markusritschel/arctic-ocean-pco2/actions/workflows/main.yml/badge.svg)
+[![build](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/workflows/main.yml/badge.svg)]([![build](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/workflows/main.yml/badge.svg)
 )
 
-![License MIT license](https://img.shields.io/github/license/markusritschel/arctic-ocean-pco2)
+![License MIT license](https://img.shields.io/github/license/markusritschel/ArcticOceanCO2-GRL-2024)
 
 
-This project investigates continuous fields of surface ocean pCO2 in the Arctic Oceann. The data stem from the MPIM-SOM-FFN product (Landschützer, 2016), which uses a feed-forward neural network to fill gaps in the field of pCO2 observations.
+This repository hosts the code for the analysis and for producing the figures in our GRL paper on Arctic Ocean pCO2.
+
+In this project we investigate continuous fields of surface ocean pCO2 in the Arctic Oceann. 
+The data stem from the MPIM-SOM-FFN data product (Landschützer, 2016), which uses a feed-forward neural network to fill gaps in the field of pCO2 observations.
 
 ## <u>Table of Contents</u> <!-- omit in toc -->
 
@@ -14,6 +17,7 @@ This project investigates continuous fields of surface ocean pCO2 in the Arctic 
   - [Cloning the project to your local machine](#cloning-the-project-to-your-local-machine)
   - [Setup](#setup)
   - [Make data available](#make-data-available)
+- [Re-creating the figures from the paper](#re-creating-the-figures-from-the-paper)
 - [Project Structure](#project-structure)
 - [Dummy files](#dummy-files)
 - [Maintainer](#maintainer)
@@ -27,7 +31,7 @@ This project investigates continuous fields of surface ocean pCO2 in the Arctic 
 To reproduce the project, clone this repository on your machine
 
 ```bash
-git clone https://github.com/markusritschel/arctic-ocean-pco2
+git clone https://github.com/markusritschel/ArcticOceanCO2-GRL-2024
 ```
 
 ### Setup
@@ -45,7 +49,7 @@ make install-requirements
 
 to install the required packages either via `conda` or `pip`.
 
-> ![!NOTE]
+> [!NOTE]
 > I recommend that you use [Conda](https://docs.conda.io/en/latest/miniconda.html) (or, for higher performance, [Mamba](https://mamba.readthedocs.io/)) as a package manager.
 
 Then, — make sure you have activated the virtual environment — run
@@ -60,11 +64,9 @@ Finally, you can run
 
 ```bash
 make tests
-make documentation
 ```
 
-to run the tests via `pytest` and build the documentation located in `docs`.
-The latter will create an HTML-rendered version of the documentation in `docs/_build/html/`.
+to run the tests via `pytest`.
 
 > [!NOTE]
 > If you experience that something is not working (e.g. creating the documentation via `make documentation`) try to perform an update via `mamba update --all`. This might solve the problem.
@@ -76,13 +78,11 @@ If the project is dealing with large amounts of data that reside somewhere outsi
 I would suggest that you link the respective subdirectories inside `data/`.
 The Python scripts should be able to follow symlinks.
 
-<!-- If all is set up, you can run `make test-structure` to perform some tests before starting running the scripts or Jupyter notebooks in the respective directories. -->
 
-<u>A recommendation for long-running tasks:</u><br>
-Some tasks like data processing will need a long time.
-It is highly recommended that you use a detachable terminal environment like `screen` or [`tmux`](https://github.com/tmux/tmux/wiki).
-This way you can detach from the session (even close your terminal) without losing or ending the process.
-Alternatively, if you work on a high-performance computer, make use of the queuing system to submit jobs.
+## Re-creating the figures from the paper
+The figures from the paper can be created by running the respective scripts in the `scripts/` directory. 
+Make sure that the data are made available as described in the previous section.
+
 
 ## Project Structure
 
@@ -131,25 +131,13 @@ Alternatively, if you work on a high-performance computer, make use of the queui
                               generated with `pip freeze > requirements.txt`
 
 
-## Dummy files
-
-The following files are for demonstration purposes only and can be safely deleted *if not needed*:
-
-    ├── notebooks/01-minimal-example.ipynb
-    ├── docs/*
-    ├── reports/book/*
-    ├── scripts/01-test.py
-    └── src
-        ├── tests/*
-        └── submodule.py
-
 ## Maintainer
 
 - [markusritschel](https://github.com/markusritschel)
 
 ## Contact & Issues
 
-For any questions or issues, please contact me via git@markusritschel.de or open an [issue](https://github.com/markusritschel/arctic-ocean-pco2/issues).
+For any questions or issues, please contact me via git@markusritschel.de or open an [issue](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/issues).
 
 ---
 

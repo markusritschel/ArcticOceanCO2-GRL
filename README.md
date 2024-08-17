@@ -9,7 +9,7 @@
 This repository hosts the code for the analysis and for producing the figures in our GRL paper on Arctic Ocean pCO2.
 
 In this project we investigate continuous fields of surface ocean pCO2 in the Arctic Oceann. 
-The data stem from the MPIM-SOM-FFN data product (Landschützer, 2016), which uses a feed-forward neural network to fill gaps in the field of pCO2 observations.
+The data stem from the MPI-SOM-FFN data product (Landschützer, 2016), which uses a feed-forward neural network to fill gaps in the field of pCO2 observations.
 
 ## <u>Table of Contents</u> <!-- omit in toc -->
 
@@ -19,7 +19,6 @@ The data stem from the MPIM-SOM-FFN data product (Landschützer, 2016), which us
   - [Make data available](#make-data-available)
 - [Re-creating the figures from the paper](#re-creating-the-figures-from-the-paper)
 - [Project Structure](#project-structure)
-- [Dummy files](#dummy-files)
 - [Maintainer](#maintainer)
 - [Contact \& Issues](#contact--issues)
 
@@ -34,10 +33,13 @@ To reproduce the project, clone this repository on your machine
 git clone https://github.com/markusritschel/ArcticOceanCO2-GRL-2024
 ```
 
+and follow the following steps.
+
+
 ### Setup
 
-For getting started in the fastest way possible, there are Make targets provided.
-So, to set up the project, simply run the following commands from the main directory:
+For most steps, there are Make targets provided (run `make` in the root directory) to get you started in the fastest possible way.
+To set up the project, simply run the following commands from the main directory:
 
 First, run
 
@@ -48,11 +50,10 @@ make install-requirements
 ```
 
 to install the required packages either via `conda` or `pip`.
+Make sure that your new conda environment is active (`conda activate <env-name>`) before you run `make install-requirements`.
 
-> [!NOTE]
-> I recommend that you use [Conda](https://docs.conda.io/en/latest/miniconda.html) (or, for higher performance, [Mamba](https://mamba.readthedocs.io/)) as a package manager.
 
-Then, — make sure you have activated the virtual environment — run
+Then run
 
 ```bash
 make src-available
@@ -66,10 +67,11 @@ Finally, you can run
 make tests
 ```
 
-to run the tests via `pytest`.
+to run the tests via `pytest` (this is optional but ensures that the code runs).
 
 > [!NOTE]
 > If you experience that something is not working (e.g. creating the documentation via `make documentation`) try to perform an update via `mamba update --all`. This might solve the problem.
+
 
 ### Make data available
 

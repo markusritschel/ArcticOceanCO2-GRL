@@ -26,6 +26,7 @@ dependencies:
   - numpy==1.26
   - pandas
   - pytest
+  - pytest-cov
   - python-dotenv
   - regionmask
   - scipy

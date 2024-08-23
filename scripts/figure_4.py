@@ -5,10 +5,8 @@
 # %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #
 import calendar
-from cmath import rect
 import logging
 import textwrap
-import cmocean
 import matplotlib as mpl
 import numpy as np
 import xarray as xr
@@ -101,10 +99,12 @@ def plot_maps(ds, cmap=None, **kwargs):
     da = ds[var]
     da_dict = build_pentads_and_delta(da)
     
-    fig, axes = plt.subplots(1, 3, subplot_kw=dict(projection=ccrs.NorthPolarStereo()), layout='constrained')
+    fig, axes = plt.subplots(1, 3, subplot_kw=dict(projection=ccrs.NorthPolarStereo()), 
+                             layout='constrained')
 
     fig.get_layout_engine().set(w_pad=.05, rect=[.05, 0, .95, 1])
-    fig.text(0, .4, textwrap.fill(da.attrs['long_name'], 15), ha='center', va='center', rotation=90, fontsize='large')
+    fig.text(0, .4, textwrap.fill(da.attrs['long_name'], 15), 
+             ha='center', va='center', rotation=90, fontsize='large')
 
     da = da_dict['first']
     im1 = plot_map(da, ax=axes[0], cmap=cmap)
@@ -122,7 +122,8 @@ def plot_maps(ds, cmap=None, **kwargs):
             im.set_norm(norm)
     # TODO: transform (maybe in a class) such that the norm is determined AND set
 
-    save(fig, PLOT_DIR/f"figure_4_{var}.png", add_hash=True, bbox_inches='tight', transparent=True)
+    save(fig, PLOT_DIR/f"figure_4_{var}.png", add_hash=True, 
+         bbox_inches='tight', transparent=True)
 
 
 def plot_map(data, ax=None, **kwargs):
@@ -149,7 +150,9 @@ def plot_map(data, ax=None, **kwargs):
     )
 
     if long_name.lower().startswith('month'):
-        im.colorbar.set_ticks(np.arange(1,13), labels=[calendar.month_abbr[i][:1] for i in np.arange(1,13)], minor=False)
+        im.colorbar.set_ticks(np.arange(1,13), 
+                              labels=[calendar.month_abbr[i][:1] for i in np.arange(1,13)], 
+                              minor=False)
         im.colorbar.minorticks_off()
 
     ax.polar.add_features(labels=False, ruler=False)

@@ -32,7 +32,7 @@ def read_data():
         "pco2_MPIM-SOM-FFN_*.nc"
     )
     data = xr.open_dataset(next(input_file))
-    data = data["pco2"].sel(time=slice("2005", "2022")).load()
+    data = data["pco2"].sel(time=slice("2005", None)).load()
     return data
 
 

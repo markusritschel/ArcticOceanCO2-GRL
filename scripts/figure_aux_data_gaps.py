@@ -17,7 +17,7 @@ from src import *
 
 log = logging.getLogger(__name__)
 
-plt.style.use(BASE_DIR / "assets/mpl_styles/white_paper.mplstyle")
+plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
 
 
 def main():

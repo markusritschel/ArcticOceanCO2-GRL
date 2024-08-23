@@ -32,12 +32,12 @@ PERIODS = [
     ('1982', '1986'),
     ('1992', '1996'),
     ('2005', '2009'),
-    ('2017', '2021')
+    ('2016', '2020')
 ]
 
 
 def main():
-    ds = xr.open_dataset(DATA_DIR/"raw/merged/observations/pco2/monthly/pco2_MPIM-SOM-FFN_198201-202012.nc")['pco2'].sel(time=slice("1982", "2022"))
+    ds = xr.open_dataset(DATA_DIR/"raw/merged/observations/pco2/monthly/pco2_MPIM-SOM-FFN_198201-202012.nc")['pco2']
     fig_maps, fig_lines = prepare_plot()
     
     plot_map_panels(ds, fig=fig_maps)
@@ -97,7 +97,8 @@ def plot_field_averages(ds, ax):
 
     domain = "Global atmosphere"
     color = colors[domain]
-    atm_co2 = get_atmospheric_co2().loc["1982":"2020"]
+    _start, _end = ds.time.dt.year[0].values, ds.time.dt.year[-1].values
+    atm_co2 = get_atmospheric_co2().loc[str(_start):str(_end)]
     atm_co2.plot(ax=ax, label=domain, ls='--', c=color, legend=False)
     compute_avg_pCO2(atm_co2.to_xarray()['deseason'], 'atmosphere')
     annotate_timeseries(ax, domain, atm_co2.iloc[-1,0], next(label_positions), color)
@@ -109,17 +110,24 @@ def plot_field_averages(ds, ax):
 
 
 def compute_avg_pCO2(da, domain):
-        avg_05_09 = da.sel(time=slice('2005', '2009')).mean('time').values
-        avg_17_21 = da.sel(time=slice('2017', '2021')).mean('time').values
+        start1 = 2005
+        end1 = start1 + 5
+        avg_1 = da.sel(time=slice(str(start1), str(end1))).mean('time').values
+        
+        end2 = da.time.dt.year[-1].values
+        start2 = end2 - 5
+        avg_2 = da.sel(time=slice(str(start2), str(end2))).mean('time').values
+        
         print('-'*60)
-        print(f"avg pCO2 {domain} (2005–2009): {avg_05_09:.2f}")
-        print(f"avg pCO2 {domain} (2012–2021): {avg_17_21:.2f}")
-        print(f"==> ΔpCO2 {domain}: {avg_17_21 - avg_05_09:.2f}")
+        print(f"avg pCO2 {domain} ({start1}–{end1}): {avg_1:.2f}")
+        print(f"avg pCO2 {domain} ({start2}–{end2}): {avg_2:.2f}")
+        print(f"==> ΔpCO2 {domain}: {avg_2 - avg_1:.2f}")
 
 
 def add_period_highlights(ax):
-    for period in PERIODS:
-        ax.axvspan(*period, fc='grey', alpha=.15)
+    for start, end in PERIODS:
+        ax.axvspan(start, str(int(end)+1), fc='grey', alpha=.15)
+
     ax.axvline(pd.to_datetime('2005'), ls='--', lw=1, c='grey')
     ax.text(pd.to_datetime('2004-01-01'), 275, "total data points collected until 2005: approx. 40,000", ha='right', va='top', fontsize='small')
 
@@ -164,14 +172,15 @@ def plot_average_map(ds, period, ax):
 
 
 def plot_trend_map(ds, map_axes):
-    ds_trend = ds.sel(time=slice("2005", "2021")).resample(time='1YS').mean()
+    ds_trend = ds.sel(time=slice("2005", None)).resample(time='1YS').mean()
     ds_trend = xarrayutils.linear_trend(ds_trend, dim='time').slope
     ax = map_axes[-1]
     im = ds_trend.plot(ax=ax, transform=ccrs.PlateCarree(), 
                   cmap=cmocean.cm.balance,
                   add_colorbar=False, robust=True)
     ax.polar.add_features(ruler=False, labels=False)
-    ax.set_title('2005–2021 trend', y=-.2)
+    end_year = ds.time.dt.year[-1].values
+    ax.set_title(f'2005–{end_year} trend', y=-.2)
     return im
 
 

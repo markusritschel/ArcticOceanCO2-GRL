@@ -209,7 +209,7 @@ def plot_trend_map(ds, map_axes):
     ax = map_axes[-1]
     im = ds_trend.plot(ax=ax, transform=ccrs.PlateCarree(), 
                   cmap=cmocean.cm.balance,
-                  add_colorbar=False, robust=True)
+                  add_colorbar=False)
     ax.polar.add_features(ruler=False, labels=False)
     end_year = ds.time.dt.year[-1].values
     ax.set_title(f'2005–{end_year} trend', y=-.2)
@@ -239,7 +239,7 @@ def cbar_trend_map(ax, im):
     )
     ax.set_axis_off()
     cbar = plt.colorbar(im, cax=cbar_ax,
-                 orientation='horizontal', shrink=.4, extend='both', extendfrac=.2
+                 orientation='horizontal', shrink=.4,
                  )
     cbar.set_label('trend [µatm/year]', labelpad=10)
     cbar_ax.xaxis.set_ticks_position('bottom')

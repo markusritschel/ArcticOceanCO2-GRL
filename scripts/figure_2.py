@@ -25,7 +25,7 @@ from src.helper.graphics import get_common_norm
 
 log = logging.getLogger(__name__)
 
-plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
+plt.style.use("white_paper")
 
 
 PERIODS = [

@@ -87,10 +87,10 @@ def plot_field_averages(ds, ax):
         color = colors[domain]
 
         ds_domain = ds.sel(lat=slice(*lat_range))
-        ds_domain = compute_weighted_mean(ds_domain)
+        ds_domain = ds_domain.stats.weighted_mean(['lon','lat'])
         ds_domain.plot(ax=ax, c=color, lw=.8)
-        ds_ = ds_domain.stats.weighted_mean('time')
-        ds_ = ds_.stats.fill_months_with_annual_value()
+        
+        ds_ = ds_domain.stats.weighted_mean('time', ffill=True)
         ds_.plot.step(where='post', ax=ax, c=color, label=domain)
         annotate_timeseries(ax, domain, ds_.isel(time=-1).values, next(label_positions), color)
         report_avg_pCO2(ds_, domain)

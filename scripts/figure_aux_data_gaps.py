@@ -17,7 +17,7 @@ from src import *
 
 log = logging.getLogger(__name__)
 
-plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
+plt.style.use("white_paper")
 
 
 def main():
@@ -55,15 +55,17 @@ def plot_maps(data):
         levels=[0, 1],
         colors="crimson",
         transform=ccrs.PlateCarree(),
-        subplot_kws=dict(projection=ccrs.NorthPolarStereo()),
+        subplot_kws=dict(projection=ccrs.NorthPolarStereo(),),
+        figsize=(figwidth, figwidth*1.2),
     )
     for i, ax in enumerate(g.axs.flat):
         ax.polar.add_features(
             labels=False,
+            ruler_kwargs=dict(primary_color='#666', width=1),
             ocean_kwargs=dict(facecolor="#fff"),
             land_kwargs=dict(facecolor="#ddd"),
         )
-        ax.set_title(calendar.month_name[i + 1])
+        ax.set_title(calendar.month_name[i + 1], fontsize='small')
 
 
 if __name__ == "__main__":

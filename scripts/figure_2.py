@@ -93,15 +93,15 @@ def plot_field_averages(ds, ax):
         ds_ = ds_.stats.fill_months_with_annual_value()
         ds_.plot.step(where='post', ax=ax, c=color, label=domain)
         annotate_timeseries(ax, domain, ds_.isel(time=-1).values, next(label_positions), color)
-        compute_avg_pCO2(ds_, domain)
+        report_avg_pCO2(ds_, domain)
 
     domain = "Global atmosphere"
     color = colors[domain]
     _start, _end = ds.time.dt.year[0].values, ds.time.dt.year[-1].values
     atm_co2 = get_atmospheric_co2().loc[str(_start):str(_end)]
     atm_co2.plot(ax=ax, label=domain, ls='--', c=color, legend=False)
-    compute_avg_pCO2(atm_co2.to_xarray()['deseason'], 'atmosphere')
     annotate_timeseries(ax, domain, atm_co2.iloc[-1,0], next(label_positions), color)
+    report_avg_pCO2(atm_co2.to_xarray()['deseason'], 'atmosphere')
     # TODO: Retrieve atmospheric pCO2 data automatically (see websites)
 
     ax.set_xlabel('')
@@ -109,7 +109,7 @@ def plot_field_averages(ds, ax):
     ax.set_title('')
 
 
-def compute_avg_pCO2(da, domain):
+def report_avg_pCO2(da, domain):
         start1 = 2005
         end1 = start1 + 5
         avg_1 = da.sel(time=slice(str(start1), str(end1))).mean('time').values

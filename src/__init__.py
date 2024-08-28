@@ -28,6 +28,38 @@ load_dotenv(dotenv_path)
 sys.path.append(str(BASE_DIR/"scripts"))
 
 
+def setup_mpl(latex_columnwidth):
+    r"""
+    Set up the matplotlib styles and global variables for figure width.
+    
+    This function reads the style directory located at ``BASE_DIR/"assets/mpl_styles"``.
+    It updates the matplotlib style library with the new stylesheets.
+    You can check the available styles with :obj:`matplotlib.style.available`.
+
+    The function also sets the global variables ``latex_width``, ``latex_figwidth``, 
+    and ``figwidth`` to the calculated figure width based on the ``latex_columnwidth`` parameter.
+
+    Parameters
+    ----------
+    latex_columnwidth : float
+        The width of the column in your :math:`\LaTeX` document. Can be obtained from the :math:`\LaTeX` document
+        with ``\showthe\columnwidth``. Look for ``\showthe\columnwidth`` in the log file, copy the output value,
+        and insert it here in the function call.
+
+    Example
+    -------
+    >>> setup_mpl(345.0)
+    """
+    import matplotlib.pyplot as plt
+    new_stylesheets = plt.style.core.read_style_directory(BASE_DIR/"assets/mpl_styles")
+    plt.style.core.update_nested_dict(plt.style.library, new_stylesheets)
+    plt.style.core.available[:] = sorted(plt.style.library.keys())
+
+    global latex_width, latex_figwidth, figwidth
+    latex_width = latex_figwidth = figwidth = latex_columnwidth / 72.27
+
+setup_mpl(latex_columnwidth=397.48499)
+
 
 welcome = """
 ████████╗██╗████████╗██╗     ███████╗

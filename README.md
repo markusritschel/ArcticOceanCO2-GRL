@@ -20,7 +20,7 @@ The data stem from the MPI-SOM-FFN data product (Landschützer, 2016), which use
 - [Re-creating the figures from the paper](#re-creating-the-figures-from-the-paper)
 - [Project Structure](#project-structure)
 - [Maintainer](#maintainer)
-- [Contact \& Issues](#contact--issues)
+- [Contact \& Issues](#contact-issues)
 
 
 ## Preparation
@@ -45,7 +45,7 @@ First, run
 
 ```bash
 make conda-env
-# or alternatively
+# followed by
 make install-requirements
 ```
 
@@ -72,6 +72,9 @@ to run the tests via `pytest` (this is optional but ensures that the code runs).
 > [!NOTE]
 > If you experience that something is not working (e.g. creating the documentation via `make documentation`) try to perform an update via `mamba update --all`. This might solve the problem.
 
+> [!NOTE]
+> If you want to compile the documentation, then also run `make install-doc-requirements`.
+> Make sure you install these _after_ the package requirements as the first one uses conda and the second one pip due to package availability in the respective repositories.
 
 ### Make data available
 

@@ -1,4 +1,5 @@
 click
+cartopy
 cmcrameri
 colorama
 dask

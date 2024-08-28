@@ -12,7 +12,8 @@ log = logging.getLogger(__name__)
 
 def mask_xarray(ds, shapefile=None, **kwargs):
     """Mask an :class:`xarray.Dataset` object with the polygons found in a shapefile.
-    The result is a 3-dim :class:`xarray.Dataset` with regional dimensions (lon/lat) and the different domains as a 3rd dimension. Masks can then simply be selected via `.sel(domain='Arctic')`.
+    
+    The result is a 3-dim :class:`xarray.Dataset` with regional dimensions (lon/lat) and the different domains as a 3rd dimension. Masks can then simply be selected via ``.sel(domain='Arctic')``.
     """
     import geopandas as gpd
     import regionmask

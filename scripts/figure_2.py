@@ -142,33 +142,65 @@ def compute_weighted_mean(ds, dims=['lon','lat']):
 def plot_map_panels(ds, fig):
     map_axes = fig.axes[2:]
     images=[]
+    stats_dict = {}
+    
     for period, ax in zip(PERIODS, map_axes[:-1]):
-        im = plot_average_map(ds, period, ax)
+        im, stats = plot_average_map(ds, period, ax)
         images.append(im)
+        stats_dict.update(stats)
     cbar_avg_maps(fig.axes[0], images)
 
     im = plot_trend_map(ds, map_axes)
     cbar_trend_map(fig.axes[1], im)
+
+    print(pd.DataFrame.from_dict(stats_dict, orient='index').round(2))
 
 
 def plot_average_map(ds, period, ax):
     ds_period = ds.sel(time=slice(*period))
     ds_avg = ds_period.mean('time')
 
-    print('-'*60)
-    sub_arctic_median = ds_avg.sel(lat=slice(50, 66)).median()
-    print(f"Sub-Arctic median: {sub_arctic_median.values} [µatm]")
-    
-    high_arctic_percentiles = ds_period.sel(lat=slice(66, 90)).quantile([.02, .98], dim='time').mean(['lon','lat']).values
-    print(f"High-Arctic percentiles: {high_arctic_percentiles}")
-    high_arctic_percentile_range = high_arctic_percentiles[1] - high_arctic_percentiles[0]
-    print(f"High-Arctic percentile range (98th - 2nd): {high_arctic_percentile_range:.2f} µatm")
-    
+
     im = ds_avg.plot(ax=ax, transform=ccrs.PlateCarree(), 
                          add_colorbar=False, robust=True)
     ax.polar.add_features(ruler=False, labels=False)
     ax.set_title(f'{period[0]}–{  period[1]}', y=-.2)
-    return im
+
+    # mask out the Baltic Sea
+    # data = ds_avg
+    # masks = mask_xarray(data, BASE_DIR/"assets/arctic-regions/arctic-regions.shp")
+    # data = data.where(~masks.sel(domain='Hudson Bay'))
+    # data = data.where(~masks.sel(domain='Baltic Sea'))
+
+    stats = gen_regional_stats(ds_avg, period)
+
+    return im, stats
+
+
+def gen_regional_stats(data, period):
+    stats_dict = dict()
+
+    sub_arctic_avg = data.sel(lat=slice(50, 66)).median()
+    stats_dict["sub_arctic_avg"] = sub_arctic_avg.values
+
+    sub_arctic_percentiles = data.sel(lat=slice(50, 66)).quantile([0.02, 0.98]).values
+    stats_dict["sub_arctic_percentile_02"] = sub_arctic_percentiles[0]
+    stats_dict["sub_arctic_percentile_98"] = sub_arctic_percentiles[1]
+    stats_dict["sub_arctic_percentile_range"] = (
+        sub_arctic_percentiles[1] - sub_arctic_percentiles[0]
+    )
+
+    high_arctic_avg = data.sel(lat=slice(66, 90)).median()
+    stats_dict["high_arctic_avg"] = high_arctic_avg.values
+
+    high_arctic_percentiles = data.sel(lat=slice(66, 90)).quantile([0.02, 0.98]).values
+    stats_dict["high_arctic_percentile_02"] = high_arctic_percentiles[0]
+    stats_dict["high_arctic_percentile_98"] = high_arctic_percentiles[1]
+    stats_dict["high_arctic_percentile_range"] = (
+        high_arctic_percentiles[1] - high_arctic_percentiles[0]
+    )
+
+    return {f"{period[0]}–{period[1]}": stats_dict}
 
 
 def plot_trend_map(ds, map_axes):

@@ -41,6 +41,9 @@ def main():
     plot_map(ds_50N, ax=ax1)
     plot_cum_hist(df_66N_avg, ax=ax2)
     plot_heatmap(df_66N_avg, ax=ax3)
+    ax1.text(0,.9, "a)", fontsize='large', fontweight='bold', transform=ax1.transAxes)
+    ax2.text(0, 1, "b)", fontsize='large', fontweight='bold', transform=ax2.transAxes)
+    ax3.text(0, 1, "c)", fontsize='large', fontweight='bold', transform=ax3.transAxes)
     save(fig, PLOT_DIR/"figure_1.png", dpi=300, transparent=True)
 
 
@@ -75,10 +78,16 @@ def prepare_plot():
 
 
 def plot_map(ds, ax):
+    import matplotlib.colors as mcolors
     ds = ds.sum('time')
-    ds.plot(ax=ax, vmax=15_000, transform=ccrs.PlateCarree(), 
-            cmap=cmocean.cm.dense, 
-            cbar_kwargs={'shrink': .6, 'label': '# observations'})
+    bounds = [0, 1, 1e3, 2e3, 4e3, 7e3, 10e3, 12e3]
+    cmap = cmcrameri.cm.bilbao_r
+    norm = mcolors.BoundaryNorm(bounds, cmap.N)
+
+    ds.plot(ax=ax, transform=ccrs.PlateCarree(), 
+            cmap=cmap, 
+            norm=norm,
+            cbar_kwargs={'shrink': .6, 'label': '# observations', 'spacing':'proportional'})
     add_region_info(ax)
     ax.polar.add_features(ruler_kwargs={'width': .3, 'primary_color': '#333'})
 
@@ -101,7 +110,7 @@ def plot_cum_hist(df, ax):
     df = df.sum(axis=1)
     ax.step(df.index, df, where='mid', color='k')
     ax.fill_between(df.index, df, step="mid", alpha=0.1, fc='k')
-    ax.set_title("Number of pCO2 observations north of 66°N [in ×10³]", loc='left', y=1.1)
+    ax.set_title("Number of pCO2 observations north of 66°N [in ×10³]", loc='left', y=1.1, x=.2)
     ax.set_xlim(1980, 2021)
     ax.set_xlabel('')
     ax.set_ylabel('Count')

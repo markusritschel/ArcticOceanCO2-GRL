@@ -55,7 +55,7 @@ def plot_maps(data):
         levels=[0, 1],
         colors="crimson",
         transform=ccrs.PlateCarree(),
-        subplot_kws=dict(projection=ccrs.NorthPolarStereo(),),
+        subplot_kws=dict(projection=ccrs.NorthPolarStereo()),
         figsize=(figwidth, figwidth*1.2),
     )
     for i, ax in enumerate(g.axs.flat):

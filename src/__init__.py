@@ -61,6 +61,21 @@ def setup_mpl(latex_columnwidth):
 setup_mpl(latex_columnwidth=397.48499)
 
 
+def read_config(cfg_file):
+    import yaml
+    import toml
+    from .core.utils import BunchDict
+    sfx = Path(cfg_file).suffix
+    engine = {'.yaml': yaml.safe_load, 
+              '.toml': toml.load}
+    with open(cfg_file, 'r') as file:
+        config = engine[sfx](file)
+    return BunchDict(config)
+    
+
+config = read_config(BASE_DIR/'config.toml')
+
+
 welcome = """
 ████████╗██╗████████╗██╗     ███████╗
 ╚══██╔══╝██║╚══██╔══╝██║     ██╔════╝

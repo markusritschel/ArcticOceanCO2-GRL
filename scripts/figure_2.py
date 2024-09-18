@@ -20,6 +20,7 @@ from my_code_base.plot.maps import *
 from my_code_base.stats.xarray_utils import *
 
 from src import *
+from src import config as cfg
 from src.core.utils import setup_logger
 from src.helper.graphics import get_common_norm
 
@@ -37,7 +38,7 @@ PERIODS = [
 
 
 def main():
-    ds = xr.open_dataset(DATA_DIR/"raw/merged/observations/pco2/monthly/pco2_MPIM-SOM-FFN_198201-202012.nc")['pco2']
+    ds = xr.open_dataset(BASE_DIR/cfg.pco2_file)[cfg.pco2_variable]
     fig_maps, fig_lines = prepare_plot()
     
     plot_map_panels(ds, fig=fig_maps)
@@ -110,7 +111,7 @@ def plot_field_averages(ds, ax):
 
 
 def report_avg_pCO2(da, domain):
-        start1 = 2005
+        start1 = int(cfg.focus_period[0])
         end1 = start1 + 5
         avg_1 = da.sel(time=slice(str(start1), str(end1))).mean('time').values
         
@@ -128,8 +129,15 @@ def add_period_highlights(ax):
     for start, end in PERIODS:
         ax.axvspan(start, str(int(end)+1), fc='grey', alpha=.15)
 
-    ax.axvline(pd.to_datetime('2005'), ls='--', lw=1, c='grey')
-    ax.text(pd.to_datetime('2004-01-01'), 275, "total data points collected until 2005: approx. 40,000", ha='right', va='top', fontsize='small')
+    focus_date = cfg.focus_period[0]
+    ax.axvline(pd.to_datetime(focus_date), ls='--', lw=1, c='grey')
+    ax.text(
+        pd.to_datetime(f"{int(focus_date)-1}-01-01"), 275,
+        f"total data points collected until {focus_date}: approx. 40,000",
+        ha="right",
+        va="top",
+        fontsize="small",
+    )
 
 
 def compute_weighted_mean(ds, dims=['lon','lat']):
@@ -204,7 +212,7 @@ def gen_regional_stats(data, period):
 
 
 def plot_trend_map(ds, map_axes):
-    ds_trend = ds.sel(time=slice("2005", None)).resample(time='1YS').mean()
+    ds_trend = ds.sel(time=slice(*cfg.focus_period)).resample(time='1YS').mean()
     ds_trend = xarrayutils.linear_trend(ds_trend, dim='time').slope
     ax = map_axes[-1]
     im = ds_trend.plot(ax=ax, transform=ccrs.PlateCarree(), 
@@ -212,7 +220,7 @@ def plot_trend_map(ds, map_axes):
                   add_colorbar=False)
     ax.polar.add_features(ruler=False, labels=False)
     end_year = ds.time.dt.year[-1].values
-    ax.set_title(f'2005–{end_year} trend', y=-.2)
+    ax.set_title('{}–{} trend'.format(*cfg.focus_period), y=-.2)
     return im
 
 

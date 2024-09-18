@@ -1,0 +1,5 @@
+pco2_file: data/raw/merged/observations/pco2/monthly/pco2_MPIM-SOM-FFN_198201-202012.nc
+pco2_variable: pco2
+socat_file: data/raw/SOCATv2022_tracks_gridded_monthly.nc
+focus_period: ["2005", "2020"]
+plot_style: white_paper

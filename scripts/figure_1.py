@@ -21,6 +21,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from my_code_base.plot.maps import *
 
 from src import *
+from src import config as cfg
 from src.core.utils import save, setup_logger
 from src.helper.coordinates import adjust_lons
 
@@ -30,7 +31,7 @@ plt.style.use(BASE_DIR/"assets/mpl_styles/white_paper.mplstyle")
 
 
 def main():
-    ds = read_socat_obs_data(DATA_DIR/"raw/SOCATv2022_tracks_gridded_monthly.nc")['fco2_count_nobs']
+    ds = read_socat_obs_data(BASE_DIR/cfg.socat_file)['fco2_count_nobs']
     ds = ds.sel(time=slice("1980", "2021"))
     ds_50N = ds.sel(lat=slice(50,90))
     ds_66N = ds.sel(lat=slice(66,90))

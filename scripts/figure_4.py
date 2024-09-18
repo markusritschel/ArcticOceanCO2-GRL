@@ -17,6 +17,7 @@ from my_code_base.plot.maps import *
 
 from src import *
 from src.helper.graphics import MidpointNorm
+from src import config as cfg
 
 xr.set_options(keep_attrs=True)
 log = logging.getLogger(__name__)
@@ -36,8 +37,7 @@ def main():
 
 
 def load_data():
-    input_file = (DATA_DIR/"raw/merged/observations/pco2/monthly/").glob("pco2_MPIM-SOM-FFN_*.nc")
-    da = xr.open_mfdataset(input_file)['pco2'].sel(time=slice("2005", "2022")).load()
+    da = xr.open_mfdataset(BASE_DIR/cfg.pco2_file)[cfg.pco2_variable].sel(time=slice(*cfg.focus_period)).load()
     da = da.sel(lat=slice(50, 90))
     return da
 

@@ -14,6 +14,7 @@ import calendar
 import matplotlib.pyplot as plt
 from my_code_base.plot.maps import *
 from src import *
+from src import config as cfg
 
 log = logging.getLogger(__name__)
 
@@ -28,11 +29,8 @@ def main():
 
 
 def read_data():
-    input_file = (DATA_DIR/"raw/merged/observations/pco2/monthly/").glob(
-        "pco2_MPIM-SOM-FFN_*.nc"
-    )
-    data = xr.open_dataset(next(input_file))
-    data = data["pco2"].sel(time=slice("2005", None)).load()
+    data = xr.open_dataset(BASE_DIR/cfg.pco2_file)
+    data = data[cfg.pco2_variable].sel(time=slice("2005", None)).load()
     return data
 
 

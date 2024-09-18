@@ -49,7 +49,7 @@ def main():
     sns.despine(offset={'left': 5}, trim=True, ax=ax)
 
     save(fig_maps, PLOT_DIR/'figure_2_maps.png', dpi=300, transparent=True, add_hash=True)
-    save(fig_lines, PLOT_DIR/'figure_2_lines.png', dpi=300, transparent=True, add_hash=True)
+    save(fig_lines, PLOT_DIR/'figure_2_lines.pdf', dpi=300, transparent=True, add_hash=True)
     
 
 def prepare_plot():

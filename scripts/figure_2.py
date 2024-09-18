@@ -53,8 +53,8 @@ def main():
     
 
 def prepare_plot():
-    """
-    Prepare the plot by creating two figures – one for the map plots and one for the line plots.
+    """Prepare the plot by creating two figures – one for the map plots and one for the line plots.
+
     The map figure will have a joint axis in the first row for the colorbar of the avg maps.
     """
     fig_maps = plt.figure(figsize=(12, 3))

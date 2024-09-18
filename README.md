@@ -1,9 +1,7 @@
 # The Arctic Ocean's Carbon Cycle <!-- omit in toc -->
 
-[![build](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/workflows/main.yml/badge.svg)]([![build](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/workflows/main.yml/badge.svg)
-)
-
-![License MIT license](https://img.shields.io/github/license/markusritschel/ArcticOceanCO2-GRL-2024)
+[![build](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/workflows/main.yml/badge.svg)](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/)
+[![License MIT license](https://img.shields.io/github/license/markusritschel/ArcticOceanCO2-GRL-2024)](./LICENSE)
 
 
 This repository hosts the code for the analysis and for producing the figures in our GRL paper on Arctic Ocean pCO2.

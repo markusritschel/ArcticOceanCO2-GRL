@@ -25,6 +25,7 @@ regionmask
 scipy
 seaborn
 ruff
+toml
 tqdm
 xarray
 xarrayutils

@@ -2,7 +2,7 @@
 
 [![build](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/workflows/main.yml/badge.svg)](https://github.com/markusritschel/ArcticOceanCO2-GRL-2024/actions/)
 [![License MIT license](https://img.shields.io/github/license/markusritschel/ArcticOceanCO2-GRL-2024)](./LICENSE)
-
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13334728.svg)](https://doi.org/10.5281/zenodo.13334728)
 
 This repository hosts the code for the analysis and for producing the figures in our GRL paper on Arctic Ocean pCO2.
 

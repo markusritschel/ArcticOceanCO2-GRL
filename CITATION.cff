@@ -4,8 +4,8 @@ authors:
 - family-names: "Ritschel"
   given-names: "Markus"
   orcid: "https://orcid.org/0000-0001-7464-7075"
-title: "The Arctic Ocean's Carbon Cycle"
+title: "The Arctic Ocean's Carbon Cycle – Code repository"
 version: 0.1.0
-doi: 10.5281/zenodo.1234
+doi: 10.5281/zenodo.13334729
 date-released: 2024-07-23
 url: "https://github.com/markusritschel/ArcticOceanCO2-GRL-2024"
